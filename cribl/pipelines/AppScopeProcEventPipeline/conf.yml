@@ -1,0 +1,64 @@
+output: default
+groups: {}
+asyncFuncTimeout: 1000
+functions:
+  - id: eval
+    filter: format=='ndjson'
+    disabled: false
+    conf:
+      keep: []
+      add:
+        - value: Object.assign(__e, start_msg.process)
+          name: ""
+        - name: type
+          value: "`evt`"
+        - name: proc_start
+          value: "true"
+      remove:
+        - start_msg
+        - cmd
+        - libscopever
+        - id
+        - format
+    description: Format start event message
+  - id: redis
+    filter: proc_start==true
+    disabled: false
+    conf:
+      commands:
+        - command: set
+          keyExpr: pid
+          argsExpr: username
+      authType: none
+      maxBlockSecs: 60
+      url: redis://redis01:6379
+    description: Map pid to username from start event message
+  - id: redis
+    filter: proc_start!=true
+    disabled: false
+    conf:
+      commands:
+        - command: get
+          keyExpr: body.pid
+          outField: username
+      authType: none
+      maxBlockSecs: 60
+      url: redis://redis01:6379
+    description: Add username
+  - id: eval
+    filter: body.data.file=='/opt/secret_dir/lorem.yml'
+    disabled: true
+    conf:
+      add:
+        - name: alarm
+          value: "true"
+    description: Add alarm field in case of file is accessed
+  - id: eval
+    filter: proc_start!=true
+    disabled: null
+    conf:
+      add:
+        - name: evt_source
+          value: body.source
+    description: Duplicated field source as evt_source
+description: AppScope events - pass only proc.start events

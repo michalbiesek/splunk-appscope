@@ -1,0 +1,167 @@
+<form theme="dark">
+  <label>AppScopeClassicDashboard</label>
+  <description>Choose User</description>
+  <fieldset submitButton="false">
+    <input type="multiselect" token="dropdown_user_name" searchWhenChanged="true">
+      <label>SSHD User Name</label>
+      <fieldForLabel>username</fieldForLabel>
+      <fieldForValue>username</fieldForValue>
+      <search>
+        <query>source="cribl" AND proc_start=true | stats count by username</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <choice value="*">Any</choice>
+      <valuePrefix>username="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>SSHD which process was started</title>
+      <table>
+        <title>Table contains the information about user and executed process by the user</title>
+        <search>
+          <query>source="cribl" AND proc_start=true $dropdown_user_name$ | rename procname as proc, username as user | table user proc _time</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>SSHD when ssh sesion started</title>
+      <table>
+        <title>Table contains the information about user and ssh session</title>
+        <search>
+          <query>source="cribl" AND proc_start=true AND procname="sshd" $dropdown_user_name$ | rename username as user | table user  _time</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Process by user</title>
+      <chart>
+        <title>All processes</title>
+        <search>
+          <query>source="cribl" AND proc_start=true | stats count by username</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Processes</title>
+      <chart>
+        <title>Unique process</title>
+        <search>
+          <query>source="cribl" AND proc_start=true | stats dc(procname) by username</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Network communication by user HTTP request</title>
+      <chart>
+        <title>Http Requests hosts</title>
+        <search>
+          <query>source="cribl" $dropdown_user_name$ evt_source="http.req" | chart count by "body.data.http_host", username</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.axisTitleX.text">Http hostname</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Total count</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisLabelsY.integerUnits">1</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Network communication by user HTTP response</title>
+      <chart>
+        <title>Http Requests hosts</title>
+        <search>
+          <query>source="cribl" $dropdown_user_name$ evt_source="http.resp" | chart count by "body.data.http_host", username</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.axisTitleX.text">Http hostname</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Total count</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisLabelsY.integerUnits">1</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>File list count accessed by user</title>
+      <chart>
+        <search>
+          <query>source="cribl" $dropdown_user_name$ | chart count by "body.data.file", username</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.axisTitleX.text">File</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Total count</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisLabelsY.integerUnits">1</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Remove files by user</title>
+      <table>
+        <search>
+          <query>source="cribl" AND "evt_source"="fs.delete" $dropdown_user_name$ | rename body.data.file as file, username as user | table user file _time</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Table with HTTP Headers (specific user and process)</title>
+      <table>
+        <search>
+          <query>source="cribl" $dropdown_user_name$ evt_source="http.resp" | rename body.data.* as *, body.proc as process_name | fields - body.*, evt_source, event_type, cribl_pipe, channel, host, _raw*, eventtype, index, id, linecount, net*, splunk*, type, source, sourcetype |table username, process_name, _time, " ", *</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

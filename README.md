@@ -39,6 +39,9 @@ If you want to modify these settings, edit the `.env` file.
 The diagram below depicts the demo cluster.
 ![Schema_overall](schema.png)
 
+The diagram below depicts the demo scenario.
+![demo](demo.png)
+
 ## Cribl Stream configuration
 
 The diagram below depicts the Cribl Stream configuration.

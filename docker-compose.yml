@@ -44,6 +44,33 @@ services:
     networks:
       - splunk_net
 
+  redis:
+    container_name: redis01
+    image: redis:latest
+    command: redis-server --appendonly yes
+    networks:
+      - splunk_net
+
+  appscope_sshd:
+    build:
+      context: ./images
+      dockerfile: Dockerfile
+    container_name: appscope_sshd
+    ports:
+      - "2022:22"
+    tty: true
+    entrypoint:
+      - ldscope
+      - --
+      - /usr/sbin/sshd
+      - -D
+    networks:
+      - splunk_net
+    # Debug
+    cap_add:
+      - SYS_PTRACE
+
+
   cribl01:
     image: "cribl/cribl:${CRIBL_VERSION:-3.4.2}"
     container_name: cribl01
@@ -65,16 +92,7 @@ services:
     networks:
       - splunk_net
     volumes:
-      # Dashboards
-      - ./views:/opt/splunk/etc/users/admin/search/local/data/ui/views
-
-volumes:
-  data01:
-    driver: local
-  data02:
-    driver: local
-  data03:
-    driver: local
+      - ./splunk/AppScopeSSHDDemo:/opt/splunk/etc/apps/AppScopeSSHDDemo
 
 networks:
   splunk_net:

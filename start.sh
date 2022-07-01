@@ -18,6 +18,35 @@ copy_key () {
 }
 
 #######################################
+# Generate ssh key
+# Arguments:
+#   Username
+#######################################
+ssh_new_keys () {
+    local user_name=$1
+    local key_name=${user_name}_key
+    local pub_key=${key_name}.pub
+
+    echo "Generate key $key_name"
+
+    ssh-keygen -q -t rsa -b 4096 -f $key_name -P ""
+    cp $pub_key images
+}
+
+#######################################
+# Delete duplicate public key
+# Arguments:
+#   Username
+#######################################
+ssh_rm_dup_public_key () {
+    local pub_key=${1}_key.pub
+
+    echo "Remove key $pub_key"
+
+    rm images/${pub_key}
+}
+
+#######################################
 # Copy certificate to specific docker container
 # Arguments:
 #   Name of the docker container
@@ -29,8 +58,16 @@ copy_cert () {
     docker cp $CERT_NAME $output_dir$CERT_NAME
 }
 
+echo "Start generate private & public keys"
+ssh_new_keys "foouser" "appscope_sshd" 
+ssh_new_keys "baruser" "appscope_sshd" 
+
 echo "Start docker compose"
 docker-compose --env-file .env up -d --build
+
+echo "Remove duplicate public keys"
+ssh_rm_dup_public_key "foouser"
+ssh_rm_dup_public_key "baruser"
 
 echo "Copying the Cribl Configuration"
 docker cp cribl/ cribl01:/opt/cribl/local/
@@ -49,3 +86,9 @@ echo "To start scoping bash session run: 'docker-compose run appscope01'"
 echo "To start scoping individual commands run: 'docker exec -it appscope02 bash' and use ldscope/scope"
 echo "To use TLS:"
 echo "To start scoping individual commands run: 'docker exec -it appscope01_tls bash' and use ldscope/scope"
+echo "To use SSHD:"
+echo "To start scoping individual commands run: 'docker exec -it appscope_sshd bash' and use ldscope/scope"
+echo "To connect via ssh to appscope_sshd:"
+echo "To start scoping individual commands run: 'docker exec -it appscope_sshd bash' and use ldscope/scope"
+echo "'ssh foouser@localhost -i foouser_key -p 2022' pass:foouser"
+echo "'ssh baruser@localhost -i baruser_key -p 2022' pass:baruser"
