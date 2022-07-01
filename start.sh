@@ -18,23 +18,32 @@ copy_key () {
 }
 
 #######################################
-# Generate ssh key and copy public key to container
+# Generate ssh key
 # Arguments:
 #   Username
-#   Name of the docker container
 #######################################
-ssh_gen_copy_key () {
+ssh_new_keys () {
     local user_name=$1
-    local output_key=$2:/home/${user_name}/.ssh/authorized_keys
     local key_name=${user_name}_key
     local pub_key=${key_name}.pub
 
     echo "Generate key $key_name"
 
-    ssh-keygen -t rsa -b 4096 -f $key_name -P ""
+    ssh-keygen -q -t rsa -b 4096 -f $key_name -P ""
+    cp $pub_key images
+}
 
-    echo "Copying public key $pub_key for user $user_name to $output_key"
-    docker cp $pub_key $output_key
+#######################################
+# Delete duplicate public key
+# Arguments:
+#   Username
+#######################################
+ssh_rm_dup_public_key () {
+    local pub_key=${1}_key.pub
+
+    echo "Remove key $pub_key"
+
+    rm images/${pub_key}
 }
 
 #######################################
@@ -49,8 +58,16 @@ copy_cert () {
     docker cp $CERT_NAME $output_dir$CERT_NAME
 }
 
+echo "Start generate private & public keys"
+ssh_new_keys "foouser" "appscope_sshd" 
+ssh_new_keys "baruser" "appscope_sshd" 
+
 echo "Start docker compose"
 docker-compose --env-file .env up -d --build
+
+echo "Remove duplicate public keys"
+ssh_rm_dup_public_key "foouser"
+ssh_rm_dup_public_key "baruser"
 
 echo "Copying the Cribl Configuration"
 docker cp cribl/ cribl01:/opt/cribl/local/
@@ -61,8 +78,6 @@ openssl req -newkey rsa:2048 -nodes -keyout $PRIVATE_KEY_NAME -x509 -days 365 -o
 copy_key "cribl01"
 copy_cert "cribl01"
 copy_cert "appscope01_tls"
-ssh_gen_copy_key "foouser" "appscope03_ssh_test" 
-ssh_gen_copy_key "baruser" "appscope03_ssh_test" 
 
 printf '\n'
 echo "Demo is ready."
@@ -77,4 +92,3 @@ echo "To connect via ssh to appscope_sshd:"
 echo "To start scoping individual commands run: 'docker exec -it appscope_sshd bash' and use ldscope/scope"
 echo "'ssh foouser@localhost -i foouser_key -p 2022' pass:foouser"
 echo "'ssh baruser@localhost -i baruser_key -p 2022' pass:baruser"
-##TODO fix above - verify why keys do not work

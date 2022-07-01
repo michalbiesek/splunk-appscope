@@ -1,17 +1,17 @@
 metric:
-  enable: true
+  enable: false
   format:
     type: ndjson
     statsdprefix:
     statsdmaxlen: 512
     verbosity : 4
   watch:
-    - type: statsd
-    - type: fs
-    - type: net
-    - type: http
-    - type: dns
-    - type: process
+  #   - type: statsd
+  #   - type: fs
+  #   - type: net
+  #   - type: http
+  #   - type: dns
+  #   - type: process
   transport:
     type: tcp
     host: cribl01
@@ -28,11 +28,12 @@ event:
     enhancefs: true
   watch:
     - type: file
-      name: (\/logs?\/)|(\.log$)|(\.log[.\d]) # matches the filename
+      name: .*
+      # name: (\/logs?\/)|(\.log$)|(\.log[.\d]|) # matches the filename
       value: .*                               # matches data read or written
-    # - type: console
-    #   name: (stdout)|(stderr) # matches the output stream
-    #   value: .*               # matches data written
+    - type: console
+      name: (stdout)|(stderr) # matches the output stream
+      value: .*               # matches data written
     #   allowbinary: true
     # - type: net
     #   name: .*
@@ -54,7 +55,7 @@ event:
   transport:
     type: tcp
     host: cribl01
-    port: 10090
+    port: 10070
     tls:
       enable: false
       validateserver: true

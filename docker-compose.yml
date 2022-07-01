@@ -63,6 +63,7 @@ services:
     # cap_add:
     #   - SYS_PTRACE
 
+
   cribl01:
     image: "cribl/cribl:${CRIBL_VERSION:-3.4.2}"
     container_name: cribl01
@@ -84,8 +85,9 @@ services:
     networks:
       - splunk_net
     volumes:
-      # Dashboards
-      - ./views:/opt/splunk/etc/users/admin/search/local/data/ui/views
+      # Dashboard 
+      - ./splunk/views:/opt/splunk/etc/users/admin/search/local/data/ui/views:ro
+      - ./splunk/savedsearches.conf:/opt/splunk/etc/users/admin/search/local/savedsearches.conf:ro
 
 networks:
   splunk_net:

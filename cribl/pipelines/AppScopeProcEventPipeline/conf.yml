@@ -1,0 +1,32 @@
+output: default
+groups: {}
+asyncFuncTimeout: 1000
+functions:
+  - id: eval
+    filter: format=='ndjson'
+    disabled: null
+    conf:
+      keep: []
+      add:
+        - value: Object.assign(__e, start_msg.process)
+          name: ""
+        - name: type
+          value: "`event`"
+        - name: proc_start
+          value: "true"
+      remove:
+        - start_msg
+        - cmd
+        - libscopever
+        - id
+        - format
+    description: Format start event message
+  - id: eval
+    filter: body.data.file=='/opt/secret_dir/lorem.yml'
+    disabled: false
+    conf:
+      add:
+        - name: alarm
+          value: "true"
+    description: Add alarm field in case of file is accessed
+description: AppScope events - pass only proc.start events

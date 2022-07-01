@@ -1,0 +1,43 @@
+<dashboard theme="dark">
+  <label>AppScopeClassicDashboard</label>
+  <row>
+    <panel>
+      <title>SSHD which process was started</title>
+      <table>
+        <title>Table contains the information about user and proc</title>
+        <search>
+          <query>proc_start=true | rename procname as proc, username as user | table user proc _time</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>SSHD when ssh sesion started</title>
+      <table>
+        <title>Table contains the information about user and proc</title>
+        <search>
+          <query>proc_start=true AND procname="sshd"| rename username as user | table user  _time</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Alert when file is changed</title>
+      <event>
+        <title>Cribl Alert</title>
+        <search ref="Cribl Alert"></search>
+        <option name="list.drilldown">none</option>
+      </event>
+    </panel>
+  </row>
+</dashboard>

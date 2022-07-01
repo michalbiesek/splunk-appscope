@@ -16,9 +16,9 @@ inputs:
     port: 10070
     connections:
       - output: splunk-out1
-        pipeline: AppScopeProcMetricPipeline
+        pipeline: AppScopeProcEventPipeline
   in_appscope:
-    disabled: false
+    disabled: true
     host: 0.0.0.0
     tls:
       disabled: true
@@ -31,9 +31,10 @@ inputs:
     port: 10090
     authType: manual
     sendToRoutes: false
-    connections:
-      - output: splunk-out1
-        pipeline: ""
+    connections: []
+    # connections:
+    #   - output: splunk-out1
+    #     pipeline: ""
   in_tcp_json_tls:
     disabled: true
     sendToRoutes: false
