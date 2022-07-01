@@ -1,7 +1,0 @@
-
-        <dashboard version="2" theme="dark">
-            <label>AppScopeDashboardStudio</label>
-            <description></description>
-            <definition><![CDATA[{"visualizations":{"viz_klwXA7Q1":{"type":"viz.line","dataSources":{"primary":"ds_qmfCRuUG"},"title":"Memory usage in time","options":{"legend.labelStyle.overflowMode":"ellipsisStart","axisTitleX.text":"Time","axisTitleY.text":"Memory [kibibyte]"}}},"dataSources":{"ds_qmfCRuUG":{"type":"ds.search","options":{"query":"source=\"proc.mem\"| spath \"data._value\""},"name":"Proc_memory_search"}},"defaults":{"dataSources":{"ds.search":{"options":{"queryParameters":{"latest":"$global_time.latest$","earliest":"$global_time.earliest$"}}}}},"inputs":{"input_global_trp":{"type":"input.timerange","options":{"token":"global_time","defaultValue":"-24h@h,now"},"title":"Global Time Range"}},"layout":{"type":"grid","options":{},"structure":[{"item":"viz_klwXA7Q1","type":"block","position":{"x":0,"y":0,"w":1200,"h":400}}],"globalInputs":["input_global_trp"]},"description":"","title":"AppScopeDashboardStudio"}]]></definition>
-            <assets><![CDATA[{}]]></assets>
-        </dashboard>

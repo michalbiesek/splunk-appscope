@@ -1,2 +1,4 @@
-domain.crt
-domain.key
+domain.*
+foouser_key*
+baruser_key*
+images/*pub

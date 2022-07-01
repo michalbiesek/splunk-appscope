@@ -1,4 +1,22 @@
 inputs:
+  in_tcp_json:
+    disabled: false
+    sendToRoutes: false
+    pqEnabled: false
+    streamtags: []
+    host: 0.0.0.0
+    tls:
+      disabled: true
+    ipWhitelistRegex: /.*/
+    maxActiveCxn: 1000
+    enableProxyHeader: false
+    authType: manual
+    authToken: ""
+    type: tcpjson
+    port: 10070
+    connections:
+      - output: splunk-out1
+        pipeline: AppScopeProcMetricPipeline
   in_appscope:
     disabled: false
     host: 0.0.0.0
@@ -16,8 +34,27 @@ inputs:
     connections:
       - output: splunk-out1
         pipeline: ""
+  in_tcp_json_tls:
+    disabled: true
+    sendToRoutes: false
+    pqEnabled: false
+    streamtags: []
+    host: 0.0.0.0
+    tls:
+      disabled: false
+      requestCert: false
+      privKeyPath: /opt/domain.key
+      certPath: /opt/domain.crt
+    ipWhitelistRegex: /.*/
+    maxActiveCxn: 1000
+    enableProxyHeader: false
+    authType: manual
+    authToken: ""
+    type: tcpjson
+    port: 10071
+    connections: []
   in_appscope_tls:
-    disabled: false
+    disabled: true
     sendToRoutes: false
     pqEnabled: false
     streamtags: []
@@ -36,6 +73,3 @@ inputs:
     type: appscope
     port: 10091
     host: 0.0.0.0
-    connections:
-      - output: splunk-out1
-        pipeline: ""

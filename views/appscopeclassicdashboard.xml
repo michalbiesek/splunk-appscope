@@ -2,16 +2,17 @@
   <label>AppScopeClassicDashboard</label>
   <row>
     <panel>
-      <title>Proc memory in time</title>
-      <chart>
+      <title>SSHD which process was started</title>
+      <table>
+        <title>Table contains the information about user and proc</title>
         <search>
-          <query>container_name="appscope02" source="proc.mem" "data._value"="*"</query>
+          <query>metric = proc.start | rename proc as proc, username as user | table user proc _time</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
-        <option name="charting.chart">line</option>
-        <option name="charting.drilldown">none</option>
-      </chart>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
     </panel>
   </row>
 </dashboard>
