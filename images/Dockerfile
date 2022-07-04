@@ -1,9 +1,9 @@
 FROM cribl/scope:dev-x86_64
-ENV LC_CTYPE C.UTF-8
 
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt install openssh-server -y
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install curl openssh-server wget -y
 
 # Uncomment for debug
+# ENV LC_CTYPE C.UTF-8
 # RUN apt update && DEBIAN_FRONTEND=noninteractive apt install openssh-server gdb git curl wget python3 python3-pip -y
 # RUN python3 -m pip install pwn
 # RUN python3 -m pip install keystone-engine ropper

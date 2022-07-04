@@ -28,13 +28,13 @@ event:
     enhancefs: true
   watch:
     - type: file
-      name: .*
-      # name: (\/logs?\/)|(\.log$)|(\.log[.\d]|) # matches the filename
+      # name: .*
+      name: (\/logs?\/)|(\.log$)|(\.log[.\d]|) # matches the filename
       value: .*                               # matches data read or written
-    - type: console
-      name: (stdout)|(stderr) # matches the output stream
-      value: .*               # matches data written
-      allowbinary: true
+    # - type: console
+    #   name: (stdout)|(stderr) # matches the output stream
+    #   value: .*               # matches data written
+    #   allowbinary: false
     - type: net
       name: .*
       field: .*
@@ -56,6 +56,8 @@ event:
     type: tcp
     host: cribl01
     port: 10070
+    # type: file
+    # path: '/tmp/events.log'
     tls:
       enable: false
       validateserver: true

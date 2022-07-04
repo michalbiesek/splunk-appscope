@@ -11,7 +11,7 @@ functions:
         - value: Object.assign(__e, start_msg.process)
           name: ""
         - name: type
-          value: "`event`"
+          value: "`evt`"
         - name: proc_start
           value: "true"
       remove:

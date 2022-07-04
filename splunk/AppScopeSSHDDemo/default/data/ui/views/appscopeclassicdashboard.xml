@@ -1,12 +1,29 @@
-<dashboard theme="dark">
+<form theme="dark">
   <label>AppScopeClassicDashboard</label>
+  <description>Choose User</description>
+  <fieldset submitButton="false">
+    <input type="multiselect" token="dropdown_user_name" searchWhenChanged="true">
+      <label>SSHD User Name</label>
+      <fieldForLabel>username</fieldForLabel>
+      <fieldForValue>username</fieldForValue>
+      <search>
+        <query>source="cribl" AND proc_start=true | stats count by username</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <choice value="*">Any</choice>
+      <valuePrefix>username="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <title>SSHD which process was started</title>
       <table>
         <title>Table contains the information about user and proc</title>
         <search>
-          <query>proc_start=true | rename procname as proc, username as user | table user proc _time</query>
+          <query>source="cribl" AND proc_start=true $dropdown_user_name$ | rename procname as proc, username as user | table user proc _time</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
@@ -21,7 +38,7 @@
       <table>
         <title>Table contains the information about user and proc</title>
         <search>
-          <query>proc_start=true AND procname="sshd"| rename username as user | table user  _time</query>
+          <query>source="cribl" AND proc_start=true AND procname="sshd" $dropdown_user_name$ | rename username as user | table user  _time</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
@@ -32,38 +49,121 @@
   </row>
   <row>
     <panel>
-      <title>Alert when file is changed</title>
+      <title>Alert when file is changed version 2</title>
       <event>
-        <title>Cribl Alert</title>
-        <search ref="Cribl Alert"></search>
+        <title>Cribl Alert without Stream</title>
+        <search ref="Cribl Alert without Stream"></search>
         <option name="list.drilldown">none</option>
       </event>
     </panel>
   </row>
-    <label>SSh User dropdown</label>
-    <search id="ssh_user_search">
-      <query>
-        proc_start=true "$username$"
-      </query>
-    </search>
-    <fieldset>
-        <input type="dropdown" token="username">
-            <label>Select SSH user</label>
-            <choice value="*">Any</choice>
-            <search>
-              <query>
-                proc_start=true | stats count by username
-              </query>
-            </search>
-            <fieldForValue>username</fieldForValue>
-            <fieldForLabel>username</fieldForLabel>
-        </input>
-    </fieldset>
-    <row>
-        <event>
-            <title>Example Results</title>
-            <option name="count">50</option>
-            <search base="ssh_user_search"></search>
-        </event>
-    </row>
-</dashboard>
+  <row>
+    <panel>
+      <title>Process by user</title>
+      <chart>
+        <title>All processes</title>
+        <search>
+          <query>source="cribl" AND proc_start=true | stats count by username</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Processes</title>
+      <chart>
+        <title>Unique process</title>
+        <search>
+          <query>source="cribl" AND proc_start=true | stats dc(procname) by username</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Operations number</title>
+      <chart>
+        <title>Number of operation per user</title>
+        <search>
+          <query>source="cribl" | top limit=20 "body.data.op" | rename body.data.op as operation</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Network communication</title>
+      <chart>
+        <title>Http Hosts</title>
+        <search>
+          <query>source="cribl" | top limit=20 "body.data.http_host" | rename body.data.http_host as http_host</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>File list accessed</title>
+      <chart>
+        <search>
+          <query>source="cribl" | top limit=20 "body.data.file" | rename body.data.file as file</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>
