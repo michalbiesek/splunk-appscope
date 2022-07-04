@@ -40,4 +40,30 @@
       </event>
     </panel>
   </row>
+    <label>SSh User dropdown</label>
+    <search id="ssh_user_search">
+      <query>
+        proc_start=true "$username$"
+      </query>
+    </search>
+    <fieldset>
+        <input type="dropdown" token="username">
+            <label>Select SSH user</label>
+            <choice value="*">Any</choice>
+            <search>
+              <query>
+                proc_start=true | stats count by username
+              </query>
+            </search>
+            <fieldForValue>username</fieldForValue>
+            <fieldForLabel>username</fieldForLabel>
+        </input>
+    </fieldset>
+    <row>
+        <event>
+            <title>Example Results</title>
+            <option name="count">50</option>
+            <search base="ssh_user_search"></search>
+        </event>
+    </row>
 </dashboard>
