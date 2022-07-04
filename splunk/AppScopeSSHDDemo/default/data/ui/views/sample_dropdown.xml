@@ -4,22 +4,22 @@
     <!-- define master search template, with replacement tokens delimited with $ -->
     <search id="sample_search">
       <query>
-        index=sample "$to$"
+        proc_start=true "$username$"
       </query>
     </search>
 
     <fieldset>
         <!-- Define a simple dropdown form driven by a search -->
-        <input type="dropdown" token="to">
+        <input type="dropdown" token="username">
             <label>Select to address</label>
             <choice value="*">Any</choice>
             <search>
               <query>
-                index=sample | stats count by to
+                proc_start=true | stats count by username
               </query>
             </search>
-            <fieldForValue>to</fieldForValue>
-            <fieldForLabel>to</fieldForLabel>
+            <fieldForValue>username</fieldForValue>
+            <fieldForLabel>username</fieldForLabel>
         </input>
     </fieldset>
 

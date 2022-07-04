@@ -85,9 +85,7 @@ services:
     networks:
       - splunk_net
     volumes:
-      # Dashboard 
-      - ./splunk/views:/opt/splunk/etc/users/admin/search/local/data/ui/views:ro
-      - ./splunk/savedsearches.conf:/opt/splunk/etc/users/admin/search/local/savedsearches.conf:ro
+      - ./splunk/AppScopeSSHDDemo:/opt/splunk/etc/apps/AppScopeSSHDDemo
 
 networks:
   splunk_net:

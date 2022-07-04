@@ -13,7 +13,7 @@
             <choice value="*">Any</choice>
             <search>
               <query>
-                index=sample | top from | stats count by from
+                proc_start=true | top username | stats count by username
               </query>
             </search>
             <fieldForValue>from</fieldForValue>
