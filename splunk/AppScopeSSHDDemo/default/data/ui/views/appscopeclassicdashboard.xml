@@ -95,6 +95,7 @@
         <title>Number of operation per user</title>
         <search>
           <query>source="cribl" | top limit=20 "body.data.op" | rename body.data.op as operation</query>
+          <!-- source="cribl" | top limit=20 "body.data.op" by "body.data.proc_uid" | rename body.data.op  as operation, body.data.proc_uid as process_uid -->
           <earliest>-24h@h</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
